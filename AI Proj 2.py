@@ -329,3 +329,96 @@ def minimaxAI2(board, depth,maximizingPlayer):
                 column = col
         return column, value
 
+
+
+def alphaBetaAI1(board, depth, alpha, beta, maximizingPlayer):
+    available_cols = empty_cols(board)
+    terminal = is_terminal(board)
+    if depth == 0 or terminal:
+        if terminal:
+            if winning_check(board, AI1_PIECE):
+                return (None, 999999999999999)
+            elif winning_check(board, AI2_PIECE):
+                return (None, -999999999999999)
+            else:                          # Game is over, no more valid moves
+                return (None, 0)
+        else:                              # Depth is zero
+            return (None, evaluate_position(board, AI1_PIECE))
+    if maximizingPlayer:               # maximizing player
+        value = -math.inf
+        column = 0
+        for col in available_cols:
+            row = get_empty_row(board, col)
+            b_copy = board.copy()
+            b_copy[row][col] = AI1_PIECE
+            new_score = alphaBetaAI1(b_copy, depth - 1, alpha, beta, False)[1]
+            if new_score > value:
+                value = new_score
+                column = col
+            alpha = max(alpha, value)
+            if alpha >= beta:
+                break
+        return column, value
+
+    else:                          # Minimizing player
+        value = math.inf
+        column = 0
+        for col in available_cols:
+            row = get_empty_row(board, col)
+            b_copy = board.copy()
+            b_copy[row][col] = AI2_PIECE
+            new_score = alphaBetaAI1(b_copy, depth - 1, alpha, beta, True)[1]
+            if new_score < value:
+                value = new_score
+                column = col
+            beta = min(beta, value)
+            if alpha >= beta:
+                break
+        return column, value
+
+
+def alphaBetaAI2(board, depth, alpha, beta, maximizingPlayer):
+    available_cols = empty_cols(board)
+    terminal = is_terminal(board)
+    if depth == 0 or terminal:
+        if terminal:
+            if winning_check(board, AI2_PIECE):
+                return (None, 999999999999999)
+            elif winning_check(board, AI1_PIECE):
+                return (None, -999999999999999)
+            else:                        # Game is over, no more valid moves
+                return (None, 0)
+        else:                            # Depth is zero
+            return (None, evaluate_position(board, AI2_PIECE))
+    if maximizingPlayer:                 # maximizing player
+        value = -math.inf
+        column = 0
+        for col in available_cols:
+            row = get_empty_row(board, col)
+            b_copy = board.copy()
+            b_copy[row][col] = AI2_PIECE
+            new_score = alphaBetaAI2(b_copy, depth - 1, alpha, beta, False)[1]
+            if new_score > value:
+                value = new_score
+                column = col
+            alpha = max(alpha, value)
+            if alpha >= beta:
+                break
+        return column, value
+
+    else:                           # Minimizing player
+        value = math.inf
+        column = 0
+        for col in available_cols:
+            row = get_empty_row(board, col)
+            b_copy = board.copy()
+            b_copy[row][col] = AI1_PIECE
+            new_score = alphaBetaAI2(b_copy, depth - 1, alpha, beta, True)[1]
+            if new_score < value:
+                value = new_score
+                column = col
+            beta = min(beta, value)
+            if alpha >= beta:
+                break
+        return column, value
+
