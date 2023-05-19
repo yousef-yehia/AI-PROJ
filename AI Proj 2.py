@@ -422,3 +422,107 @@ def alphaBetaAI2(board, depth, alpha, beta, maximizingPlayer):
                 break
         return column, value
 
+
+def draw_board(board):   # print board
+    for c in range(COLUMN_COUNT):
+        for r in range(ROW_COUNT):  # The rectangle that is the board is BLUE
+            pygame.draw.rect(screen, BLUE, (c * SQUARE_SIZE, r * SQUARE_SIZE + SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+            pygame.draw.circle(screen, BLACK, (
+                int(c * SQUARE_SIZE + SQUARE_SIZE / 2), int(r * SQUARE_SIZE + SQUARE_SIZE + SQUARE_SIZE / 2)),
+                               int(SQUARE_SIZE / 2 - 5)) # The circle that inside the board is BLACK
+    for c in range(COLUMN_COUNT):
+        for r in range(ROW_COUNT):
+            if board[r][c] == 1:   # AI 1 is be red
+                pygame.draw.circle(screen, RED, (
+                    int(c * SQUARE_SIZE + SQUARE_SIZE / 2), SCREEN_HEIGHT - int(r * SQUARE_SIZE + SQUARE_SIZE / 2)),
+                                   int(SQUARE_SIZE / 2 - 5))
+            elif board[r][c] == 2:   # AI 2 is be YELLOW
+                pygame.draw.circle(screen, YELLOW, (
+                    int(c * SQUARE_SIZE + SQUARE_SIZE / 2), SCREEN_HEIGHT - int(r * SQUARE_SIZE + SQUARE_SIZE / 2)),
+                                   int(SQUARE_SIZE / 2 - 5))
+    pygame.display.update()
+
+
+board = create_board()
+#print(board)
+
+game_over = False
+
+
+draw_board(board)
+pygame.display.update()
+
+
+turn = random.randint(AI1, AI2)
+
+while not game_over:
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit()
+
+
+
+    if turn == AI1 and not game_over:  # hard here
+        if( algorithm == 1 ):  # if easy AI 1 will win  if medium Whoever does not start will win if hard => draw
+            col, minimax_score = alphaBetaAI1(board, 5, -math.inf, math.inf, True)
+        else:
+            col, minimax_score = minimaxAI1(board, 5, True)
+
+        if len(empty_cols(board)) == 0:
+            label = header_font.render("DRAW!!", True, WHITE)  # print DRAW by color WHITE
+            label_rect = label.get_rect(midtop=(SCREEN_WIDTH // 2, 10))  # Get the rectangle of the text that will print in it
+            screen.blit(label, label_rect)  # print the text at the top middle of the screen     blit => print
+            game_over = True
+            # print(board)
+            draw_board(board)
+
+
+        else:
+            pygame.time.wait(200)
+            row = get_empty_row(board, col)
+            board[row][col] = AI1_PIECE
+
+            if winning_check(board, AI1_PIECE):
+                label = header_font.render("AI 1 wins!!", True, RED)  # print AI 1 wins!! by color red
+                label_rect = label.get_rect(midtop=(SCREEN_WIDTH // 2, 10)) # Get the rectangle of the text that will print in it
+                screen.blit(label, label_rect)   # print the text at the top middle of the screen   blit => print
+                game_over = True
+
+            # print(board)
+            draw_board(board)
+
+            turn = 1
+
+    if turn == AI2 and not game_over:
+
+        if (algorithm == 1):  # if easy AI 1 will win  if medium Whoever does not start will win if hard => draw
+            col, minimax_score = alphaBetaAI2(board, difficulty, -math.inf, math.inf, True) # here difficulty => 5 => draw
+        else:
+            col, minimax_score = minimaxAI2(board, difficulty, True) # here difficulty => 5 => draw
+
+        if len(empty_cols(board)) == 0:
+            label = header_font.render("DRAW!!", True, WHITE) # print DRAW by color WHITE
+            label_rect = label.get_rect(midtop=(SCREEN_WIDTH // 2, 10))  # Get the rectangle of the text that will print in it
+            screen.blit(label, label_rect)  # print the text at the top middle of the screen    blit => print
+            game_over = True
+            # print(board)
+            draw_board(board)
+        else:
+            pygame.time.wait(200)
+            row = get_empty_row(board, col)
+            board[row][col] = AI2_PIECE
+
+            if winning_check(board, AI2_PIECE):
+                label = header_font.render("AI 2 wins!!", True, YELLOW)  # print AI 2 wins!! by color blue
+                label_rect = label.get_rect(midtop=(SCREEN_WIDTH // 2, 10))  # Get the rectangle of the text that will print in it
+                screen.blit(label, label_rect) # print the text at the top middle of the screen     blit => print
+                game_over = True
+
+            # print(board)
+            draw_board(board)
+
+            turn = 0
+
+    if game_over:
+        pygame.time.wait(5000)      # wait 5s to close the GUI
